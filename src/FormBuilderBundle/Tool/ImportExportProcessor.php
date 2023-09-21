@@ -9,6 +9,7 @@ use FormBuilderBundle\Model\OutputWorkflowChannel;
 use FormBuilderBundle\Model\OutputWorkflowInterface;
 use Pimcore\Db\ConnectionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Yaml\Yaml;
 
 class ImportExportProcessor
@@ -73,7 +74,7 @@ class ImportExportProcessor
                         : null,
                     'funnel_actions' => is_string($rawFormOutputWorkflowChannelDefinition['funnel_actions'])
                         ? unserialize($rawFormOutputWorkflowChannelDefinition['funnel_actions'], ['allowed_classes' => false])
-                        : null,
+                        : [],
                 ];
             }
 
@@ -153,8 +154,8 @@ class ImportExportProcessor
                         $channel = new OutputWorkflowChannel();
                         $channel->setType($channelDefinition['type']);
                         $channel->setConfiguration($channelDefinition['configuration']);
-                        $channel->setName($channelDefinition['name'] ?? null);
-                        $channel->setFunnelActions($channelDefinition['funnel_actions'] ?? null);
+                        $channel->setName($channelDefinition['name'] ?? Uuid::v4()->toRfc4122());
+                        $channel->setFunnelActions($channelDefinition['funnel_actions'] ?? []);
                         $channel->setOutputWorkflow($outputWorkflow);
 
                         $outputWorkflow->addChannel($channel);
